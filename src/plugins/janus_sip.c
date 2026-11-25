@@ -5031,7 +5031,10 @@ static void *janus_sip_handler(void *data) {
 			janus_sip_call_update_status(session, janus_sip_call_status_closing);
 			char custom_headers[2048];
 			janus_sip_parse_custom_headers(root, (char *)&custom_headers, sizeof(custom_headers));
+			char *proxy = session->helper && session->master ?
+				session->master->account.outbound_proxy : session->account.outbound_proxy;
 			nua_bye(session->stack->s_nh_i,
+	   			TAG_IF(proxy != NULL, NUTAG_PROXY(proxy)),
 				TAG_IF(strlen(custom_headers) > 0, SIPTAG_HEADER_STR(custom_headers)),
 				TAG_END());
 			janus_mutex_lock(&session->mutex);
